@@ -1,0 +1,57 @@
+.Todo {
+    font-size: 30px;
+    font-weight: bold;
+    &__add {
+        color: red;
+    }
+    &__task {
+        color: aquamarine;
+    }
+}
+
+.todo__add,
+.todo__task {
+    text-align: left;
+    width: 95%;
+    border: solid 1px whitesmoke;
+    border-radius: 5px;
+    margin-left: 3%;
+    margin-top: 1%;
+    font-weight: lighter;
+    font-size: 25px;
+}
+
+.todo__add p {
+    font-size: 15px;
+}
+
+.Todo .header {
+    background-color: whitesmoke;
+    padding: 1%;
+}
+
+.todo__add .body {
+    padding: 1%;
+}
+
+.todo__task table {
+    background-color: white;
+    width: 100%;
+    text-align: left;
+}
+
+.todo__task table {
+    margin: 1%;
+}
+
+.todo__task a {
+    margin-right: 1%;
+}
+
+.todo__task table td {
+    padding-top: 2%;
+    font-size: 20px;
+}
+
+.todo__task table .col1 {
+}
