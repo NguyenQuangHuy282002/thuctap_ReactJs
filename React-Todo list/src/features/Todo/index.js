@@ -3,20 +3,58 @@ import PropTypes from "prop-types";
 import "./style.scss";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState } from "react";
+import { Modal, Input, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 Todo.propTypes = {};
 
 function Todo(props) {
 
   const [arr, setArr] = useState([]);
   const [todo, setTodo] = useState("");
+  const [valueInput, setValueInput] = useState({
+    inputTask: "",
+    inputEdit: "",
+    indexEdit: 0,
+  });
+  const handleInput = (e) => {
+    const { value, name } = e.target;
+    setValueInput({
+      ...valueInput,
+      [name]: value,
+    });
+  };
+  const [isOpen, setIsOpen] = useState(false);
+  const toggle = () => {
+    setIsOpen(!isOpen);
+  };
   function handleSubmit(e) {
     e.preventDefault();
-    const newTodo = {
-      item: todo,
-      status: "Not completed",
-    };
-    setArr([...arr].concat(newTodo));
-    setTodo("");
+    if (todo.length !== 4) {
+      const newTodo = {
+        item: todo,
+        status: "Not completed",
+      };
+      setArr([...arr].concat(newTodo));
+      setTodo("");
+    } else {
+      alert("wrong input");
+      setTodo("");
+    }
+  }
+  const handleOpenEdit = (index) => {
+    setValueInput({
+      ...valueInput,
+      inputEdit: arr[index].item,
+      indexEdit: index,
+    });
+    setIsOpen(!isOpen);
+  };
+
+  const handleSaveEdit = () => {
+    let item = [...arr];
+    let index = valueInput.indexEdit;
+    item[index].item = valueInput.inputEdit;
+    setArr(item);
+    setIsOpen(!isOpen);
   }
 
   function changeStatus(item) {
@@ -72,20 +110,42 @@ function Todo(props) {
           </thead>
 
           <tbody>
-            {arr.map(item => (
+            {arr.map((item, index) => (
               <>
-                <tr>
+                <tr className={item.status === "Completed" ? 'todo-row-complete' : 'todo-row'}>
                   <td>{item.item}</td>
                   <td>{item.status}</td>
                   <td>
-                    <a className="btn btn-primary" onClick={() => changeStatus(item)}>Complete</a>
-                    <a className="btn btn-danger" onClick={() => deleteTask(item)}>Delete</a>
+                    <a className="btn btn-primary" id="complete" onClick={() => changeStatus(item)}>Complete</a>
+                    <a className="btn btn-primary" id="complete" onClick={() => handleOpenEdit(index)}>Edit</a>
+                    <a className="btn btn-danger" id="delete" onClick={() => deleteTask(item)}>Delete</a>
                   </td>
                 </tr>
               </>
             ))}
           </tbody>
         </table>
+        <div>
+          <Modal isOpen={isOpen} toggle={toggle}>
+            <ModalHeader toggle={toggle}>Edit</ModalHeader>
+            <ModalBody>
+              <Input
+                placeholder="What do you wants to edit?"
+                name="inputEdit"
+                value={valueInput.inputEdit}
+                onChange={handleInput}
+              ></Input>
+            </ModalBody>
+            <ModalFooter>
+              <Button color="primary" onClick={handleSaveEdit}>
+                Save
+              </Button>{" "}
+              <Button color="secondary" onClick={toggle}>
+                Cancel
+              </Button>
+            </ModalFooter>
+          </Modal>
+        </div>
       </div>
     </div>
   );
