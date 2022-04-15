@@ -1,17 +1,67 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import "./style.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useState } from "react";
 import { Button, Form, FormGroup, Label, Input, Table } from 'reactstrap';
+import ListShift from "../Components/ListShift";
 
 Todo.propTypes = {};
 
 function Todo(props) {
+  const initShift = [
+    {
+      name: "huy",
+      timeArrive: "10:00",
+      timeGo: "12:00",
+      timeTotal: 2,
+      indexSalary: 1,
+      day:
+        [{
+          name: "T2",
+          checked: true,
+        },
+        {
+          name: "T3",
+          checked: true,
+        }]
+    },
+    {
+      name: "huy123",
+      timeArrive: "10:00",
+      timeGo: "12:00",
+      timeTotal: 2,
+      indexSalary: 1,
+      day:
+        [{
+          name: "T2",
+          checked: true,
+        },
+        {
+          name: "T3",
+          checked: true,
+        }]
+    },
+    {
+      name: "huy567",
+      timeArrive: "10:00",
+      timeGo: "12:00",
+      timeTotal: 2,
+      indexSalary: 1,
+      day:
+        [{
+          name: "T2",
+          checked: true,
+        },
+        {
+          name: "T3",
+          checked: true,
+        }]
+    }
+  ];
+  const [shift, setShift] = useState(initShift);
 
-
-  const [shift, setShift] = useState([]);
   const [text1, setText1] = useState("");
   const [text2, setText2] = useState("");
   const [text3, setText3] = useState("");
@@ -50,7 +100,7 @@ function Todo(props) {
 
   const [checkedArr, setCheckedArr] = useState(initDay);
 
-  const handleOnChange = (position) => {
+  const handleChecked = (position) => {
     let tempArr = [...checkedArr];
     let tempItem = { ...tempArr[position] };
     tempItem.checked = !tempItem.checked;
@@ -96,6 +146,32 @@ function Todo(props) {
     // setCheckedState([false, false, false, false, false, false, false]);
     setCheckedArr(initDay);
   }
+
+  const sortName = () => {
+    const cShift = JSON.parse(JSON.stringify(shift))
+    const sortShift = cShift.sort((a, b) => (a.name > b.name) ? 1 : -1);
+    setShift(sortShift);
+  }
+
+
+  const [filterShift, setFilterShift] = useState(shift);
+
+  useEffect(() => {
+    //Runs on the first render
+    //And any time any dependency value changes
+    setFilterShift(shift);
+  }, [shift]);
+
+
+  const search = (searchValue) => {
+    if (searchValue !== '') {
+      const filterShift = shift.filter(e => e.name.includes(searchValue));
+      setFilterShift(filterShift);
+    } else {
+      setFilterShift(shift);
+    }
+  }
+
   return (
     <div className="home_page">
       <nav className="navbar navbar-expand-sm bg-primary navbar-dark">
@@ -137,7 +213,7 @@ function Todo(props) {
 
         <div className="search_add">
           <form>
-            <input type="search" placeholder="Tìm kiếm" />
+            <input type="search" placeholder="Tìm kiếm" onChange={(e) => search(e.target.value)} />
           </form>
           <Button color="primary" onClick={togglePopup}>+ Thêm ca làm việc</Button>
         </div>
@@ -159,20 +235,20 @@ function Todo(props) {
                   <br />
                   <FormGroup className="formGroup">
                     <Label>Thời gian đến</Label>
-                    <Input placeholder="--:-- --" value={text2} onChange={e => setText2(e.target.value)} />
+                    <Input type="time" placeholder="--:-- --" value={text2} onChange={e => setText2(e.target.value)} />
                   </FormGroup>
                   <FormGroup className="formGroup">
                     <Label>Thời gian về</Label>
-                    <Input placeholder="--:-- --" value={text3} onChange={e => setText3(e.target.value)} />
+                    <Input type="time" placeholder="--:-- --" value={text3} onChange={e => setText3(e.target.value)} />
                   </FormGroup>
 
                   <FormGroup className="formGroup">
                     <Label >Tổng thời gian làm</Label>
-                    <Input placeholder="0" value={text4} onChange={e => setText4(e.target.value)} />
+                    <Input type="number" min="0" placeholder="0" value={text4} onChange={e => setText4(e.target.value)} />
                   </FormGroup>
                   <FormGroup className="formGroup">
                     <Label >Hệ số lương</Label>
-                    <Input placeholder="0" value={text5} onChange={e => setText5(e.target.value)} />
+                    <Input type="number" min="0" placeholder="0" value={text5} onChange={e => setText5(e.target.value)} />
                   </FormGroup>
 
                   <FormGroup check>
@@ -183,7 +259,7 @@ function Todo(props) {
                             type="checkbox"
                             value={e.name}
                             checked={e.checked}
-                            onChange={() => handleOnChange(i)}
+                            onChange={() => handleChecked(i)}
                           />{' '}
                           {e.name}
                         </Label>
@@ -200,11 +276,11 @@ function Todo(props) {
           </>}
 
 
-        <Table borderless striped>
+        {/* <Table borderless striped>
           <thead>
             <tr>
               <th>STT</th>
-              <th>Tên ca</th>
+              <th><Button onClick={sortName}>Tên ca</Button></th>
               <th>Giờ công</th>
               <th>Thời gian</th>
               <th>Ngày làm trong tuần</th>
@@ -214,27 +290,15 @@ function Todo(props) {
             </tr>
           </thead>
           <tbody>
-            {shift.map((s, i) => (
-              <tr>
-                <td>{i + 1}</td>
-                <td>{s.name}</td>
-                <td>{s.timeTotal}</td>
-                <td>{s.timeArrive} - {s.timeGo}</td>
-                <td>
-                  {s.day.map((e, i) => {
-                    if (i !== s.day.length - 1) {
-                      return (e.name + "-")
-                    }
-                    return (e.name)
-                  })}
-                </td>
-                <td>{s.indexSalary}</td>
-                <td>True</td>
-                <td><Button color="primary" onClick={() => { deleteShift(s) }}><i class="bi bi-pencil-fill"></i> Sửa</Button></td>
-              </tr>
-            ))}
+            {true ? (displayShift(filterShift)) : (displayShift(shift))}
           </tbody>
-        </Table>
+        </Table> */}
+        <ListShift
+          deleteShift={deleteShift}
+          shift={shift}
+          filterShift={filterShift}
+          sortName={sortName}
+        />
       </div>
     </div >
   );
